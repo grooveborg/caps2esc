@@ -36,7 +36,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set caps2esc version
+        if: github.event_name == 'push'
+        run: |
+          latest_tag=$(curl -fsS https://gitlab.com/api/v4/projects/3772371/repository/tags | jq -r '.[0] | .name')
+          echo "VERSION=$latest_tag" >> "$GITHUB_ENV"
+
       - name: Build and push container image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        id: build_and_push
+        with:
+          file: Containerfile
+          push: true
+          tags: |
+            ${{ vars.REGISTRY }}/${{ github.repository }}:${{ env.VERSION }}
+            ${{ vars.REGISTRY }}/${{ github.repository }}:latest
+          outputs: type=image,oci-mediatypes=true,compression=zstd,compression-level=3,force-compression=true
+
+      - name: Build and push container image
+        if: github.event_name == 'repository_dispatch'
         uses: docker/build-push-action@v6
         id: build_and_push
         with:
