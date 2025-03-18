@@ -45,7 +45,6 @@ jobs:
       - name: Build and push container image
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
-        id: build_and_push
         with:
           file: Containerfile
           push: true
@@ -57,7 +56,6 @@ jobs:
       - name: Build and push container image
         if: github.event_name == 'repository_dispatch'
         uses: docker/build-push-action@v6
-        id: build_and_push
         with:
           file: Containerfile
           push: true
