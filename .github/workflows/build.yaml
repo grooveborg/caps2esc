@@ -9,9 +9,6 @@ on:
   repository_dispatch:
     types: [release.created]
 
-env:
-  registry: ${{ vars.REGISTRY }}
-
 jobs:
   build:
     name: Build caps2esc
