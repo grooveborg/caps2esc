@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 'develop/**'
     paths-ignore:
       - "**.md"
   repository_dispatch:
@@ -40,23 +41,11 @@ jobs:
           echo "VERSION=$latest_tag" >> "$GITHUB_ENV"
 
       - name: Build and push container image
-        if: github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           file: Containerfile
           push: true
           tags: |
-            ${{ vars.REGISTRY }}/${{ github.repository }}:${{ env.VERSION }}
-            ${{ vars.REGISTRY }}/${{ github.repository }}:latest
-          outputs: type=image,oci-mediatypes=true,compression=zstd,compression-level=3,force-compression=true
-
-      - name: Build and push container image
-        if: github.event_name == 'repository_dispatch'
-        uses: docker/build-push-action@v6
-        with:
-          file: Containerfile
-          push: true
-          tags: |
-            ${{ vars.REGISTRY }}/${{ github.repository }}:${{ github.event.client_payload.version }}
+            ${{ vars.REGISTRY }}/${{ github.repository }}:${{ github.event_name == 'push' && env.VERSION || github.event.client_payload.version }}
             ${{ vars.REGISTRY }}/${{ github.repository }}:latest
           outputs: type=image,oci-mediatypes=true,compression=zstd,compression-level=3,force-compression=true
