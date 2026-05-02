@@ -2,7 +2,7 @@ FROM docker.io/library/fedora:latest AS builder
 ENV CMAKE_FLAGS="-DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 RUN <<EORUN
     set -eu
-    dnf -y install boost-devel cmake gcc-c++ git libevdev-devel systemd-devel yaml-cpp-devel
+    dnf -y --setopt=install_weak_deps=False install boost-devel cmake gcc-c++ git libevdev-devel systemd-devel yaml-cpp-devel
     # Build interception-tools
     git clone --depth 1 https://gitlab.com/interception/linux/tools.git interception-tools
     cd interception-tools
